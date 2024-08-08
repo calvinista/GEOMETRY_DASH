@@ -38,14 +38,101 @@ typedef struct
     char nome[20];
     int pontos;
 }SCORES;
-//FUN��ES:
-void menu()
-{
-    ClearBackground(RAYWHITE);
-    DrawText("Inf Dash", SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT / 2 - 100, 20, BLACK);
-    DrawText("1. Jogar", SCREEN_WIDTH / 2 - 40, SCREEN_HEIGHT / 2 - 50, 20, DARKGRAY);
-    DrawText("2. LeaderBoard", SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2, 20, DARKGRAY);
-    DrawText("3. Sair", SCREEN_WIDTH / 2 - 30, SCREEN_HEIGHT / 2 + 50, 20, DARKGRAY);
+//FUNÇÕES:
+void drawMenu() {
+
+    //carrega textura
+    static Texture2D logo = LoadTexture("logo.png");
+
+    //pega a posição do mouse
+	Vector2 mouse = GetMousePosition();
+
+    //botão "play"
+	Rectangle play = {
+	    (GetScreenWidth() / 2) - MeasureText("Play", 70) / 2,
+        GetScreenHeight() / 2,
+        MeasureText("Play", 70),
+        70 };
+
+    //botão "scoreboard"
+	Rectangle scoreBoard = {
+	    (GetScreenWidth() / 2) - MeasureText("LeaderBoard", 70) / 2,
+        (GetScreenHeight() / 2) + 80,
+        MeasureText("LeaderBoard", 70),
+        70 };
+
+    //botão "quit"
+	Rectangle quit = {
+        (GetScreenWidth() / 2) - MeasureText("Quit", 70) / 2,
+        (GetScreenHeight() / 2) + 160,
+        MeasureText("Quit", 70),
+        70 };
+
+    //desenha o fundo azul-escuro
+	DrawRectangle(
+		0,
+		0,
+		GetScreenWidth(),
+		GetScreenHeight(),
+		DARKBLUE);
+
+    //desenha o letreiro do menu
+	DrawTexture(logo,
+		205,
+		GetScreenHeight() / 2 - 269,
+		RAYWHITE);
+
+    //muda a cor do botão "play" caso o mouse esteja em cima dele
+	if (CheckCollisionPointRec(mouse, play)) {
+		DrawRectangleRec(
+			play,
+			BLUE
+		);
+	}
+
+
+    //muda a cor do botão "scoreBoard" caso o mouse esteja em cima dele
+	if (CheckCollisionPointRec(mouse, scoreBoard))
+		DrawRectangleRec(
+			scoreBoard,
+			BLUE
+		);
+
+
+    //muda a cor do botão "quit" caso o mouse esteja em cima dele
+	if (CheckCollisionPointRec(mouse, quit))
+		DrawRectangleRec(
+			quit,
+			BLUE
+		);
+
+    //escreve "Play" acima do botão correspondente
+	DrawText(
+		"Play",
+		(GetScreenWidth() / 2) - MeasureText("Play", 70) / 2,
+		GetScreenHeight() / 2,
+		70,
+		YELLOW
+	);
+
+	//escreve "LeaderBoard" acima do botão correspondente
+	DrawText(
+		"LeaderBoard",
+		(GetScreenWidth() / 2) - MeasureText("LeaderBoard", 70) / 2,
+		(GetScreenHeight() / 2) + 80,
+		70,
+		YELLOW
+	);
+
+	//escreve "Quit" acima do botão correspondente
+	DrawText(
+		"Quit",
+		(GetScreenWidth() / 2) - MeasureText("Quit", 70) / 2,
+		(GetScreenHeight() / 2) + 160,
+		70,
+		YELLOW
+	);
+
 }
 
 void atualiza_jogador(JOGADOR *jogador)
@@ -117,14 +204,14 @@ int main()
     SetTargetFPS(FRAME_RATE);
 
      //------------------------------------------
-    // CARREGUE SEUS GR�FICOS AQUI (LoadTexture)
+    // CARREGUE SEUS GRÁFICOS AQUI (LoadTexture)
     //-------------------------------------------
     carrega_fase(arquivo);
     while (!WindowShouldClose())
     {
 
         //-----------------------------
-        // ATUALIZE SUAS VARI�VEIS AQUI
+        // ATUALIZE SUAS VARIÁVEIS AQUI
         //-----------------------------
         atualiza_jogador(&jogador);//AINDA CORRIGINDO
 

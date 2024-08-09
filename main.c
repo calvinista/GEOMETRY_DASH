@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -10,17 +11,19 @@
 #define LARG 60
 #define LIN 10
 #define COL 300
-#define NUM_BLOCOS 10
-#define NUM_OBS 10
+#define NUM 10
 #define SOLO 0
-char nivel[LIN][COL];
+#define VIDAS 3
+
 //STRUCTS:
 typedef struct
 {
     Vector2 velocidade;
     Vector2 gravidade;
     Vector2 posicao;
+    Vector2 tamanho;
     int tentativas;
+    int pts;
 }JOGADOR;
 
 typedef struct
@@ -38,9 +41,16 @@ typedef struct
     char nome[20];
     int pontos;
 }SCORES;
-//FUNÇÕES:
-void drawMenu() {
 
+//VARS
+char nivel[LIN][COL];
+bool fimJogo = true;
+static BLOCO bloco[LIN][COL] = {0};
+static JOGADOR jogador = {0};
+static SCORES top_scores[5] = {0};
+//FUNÇÕES:
+/*void menu()
+{
     //carrega textura
     static Texture2D logo = LoadTexture("logo.png");
 
@@ -133,7 +143,7 @@ void drawMenu() {
 		YELLOW
 	);
 
-}
+}*/
 
 void atualiza_jogador(JOGADOR *jogador)
 {
@@ -152,39 +162,62 @@ void atualiza_jogador(JOGADOR *jogador)
 
 };
 
-void carrega_fase(char arq[])
+void carrega_fase(char nivel[LIN][COL], int fase)
 {
-    FILE *arquivo;
     int lin;
     int col;
+    FILE *arq;
+    char bloco;
+    char arqfase[11] = {'n', 'i', 'v', 'e', 'l', 'x', '.', 't', 'x', 't'};
 
+    arqfase[5] =  fase+0;
 
-    if((arq = fopen(arq, "r"))==NULL)
+    arq = fopen(arqfase, "r");
+
+    if(arq == NULL)
     {
-        return 0;
+        fclose(arq);
+        arqfase[5] = 'x';
+        arq = fopen(arqfase, "r");
     }
 
-
     for(lin=0; lin<LIN; lin++)
-    {
         for(col=0; col<COL; col++)
-        {
-            nivel[lin][col] = fgetc(arq);
-        }
-        fgetc(arq);
+    {
+        fscanf(arq, "%c", &bloco);
+        nivel[LIN][COL] = bloco;
     }
 
     fclose(arq);
+
+    return;
 };
 
+/*
+void inicia_vars_jogo(char nivel[LIN][COL], int fase)
+{
+    int lin, col, posx, posy;
+
+    //if(fase!=menu())
+        carrega_fase(nivel, fase);
+
+        if(fimJogo == true|| fase == menu())
+        {
+            jogador.posicao = (Vector2){SCREEN_WIDTH/2, SCREEN_HEIGHT*7/8};
+            jogador.tamanho = (Vector2){SCREEN_WIDTH/10, 20};
+            jogador.tentativas = VIDAS;
+            jogador.pts = 0;
+        }
+}*/
 void desenha_fase(JOGADOR jogador, BLOCO blocos[], OBSTACULO obstaculos[])
 {
     int i;
-    int num_blocos = NUM_BLOCOS;
-    int num_obs = NUM_OBS;
+    int num_blocos = NUM;
+    int num_obs = NUM;
 
     ClearBackground(RAYWHITE);
 
+    //BLOCOS E OBSTACULOS
     for(i=0; i<num_blocos; i++)
     {
         DrawRectangle(blocos[i].posicao.x, blocos[i].posicao.y, LARG, ALT, DARKBLUE);
@@ -194,19 +227,22 @@ void desenha_fase(JOGADOR jogador, BLOCO blocos[], OBSTACULO obstaculos[])
         DrawRectangle(obstaculos[i].posicao.x, obstaculos[i].posicao.y, LARG, ALT, RED);
     }
 
+    //JOGADOR
     DrawRectangle(jogador.posicao.x, jogador.posicao.y, LARG, ALT, DARKGREEN);
 };
 //PROGRAMA PRINCIPAL
 int main()
 {
-    char arquivo[100];
+    BLOCO blocos[10];
+    OBSTACULO obstaculos[10];
+    JOGADOR jogador;
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Inf Dash");
     SetTargetFPS(FRAME_RATE);
 
      //------------------------------------------
     // CARREGUE SEUS GRÁFICOS AQUI (LoadTexture)
     //-------------------------------------------
-    carrega_fase(arquivo);
+    //carrega_fase(arquivo);
     while (!WindowShouldClose())
     {
 
@@ -220,6 +256,7 @@ int main()
         //-----------------------------
         // DESENHE SEU JOGO AQUI
         //-----------------------------
+        desenha_fase(jogador, blocos, obstaculos);
         EndDrawing();
     }
 
